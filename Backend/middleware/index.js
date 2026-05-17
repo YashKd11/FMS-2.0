@@ -4,7 +4,7 @@ const {
   feedbackRequestsLimiter,
   apiLimiter,
   bugResourcesLimiter,
-} = require("./Limiter");
+} = require("./limiter");
 
 module.exports = {
   auth,
