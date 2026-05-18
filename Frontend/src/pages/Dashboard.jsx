@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { api } from "../services/api";
 import { Edit, Trash } from "lucide-react";
 
