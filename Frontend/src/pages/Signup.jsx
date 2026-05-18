@@ -15,6 +15,7 @@ const Signup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [serverMessage, setServerMessage] = useState({ type: '', text: '' });
 
+  console.log(import.meta.env.VITE_API_URL);
   const API = axios.create({
     baseURL: ` ${import.meta.env.VITE_API_URL}`
   });
