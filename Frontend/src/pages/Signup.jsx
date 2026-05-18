@@ -16,7 +16,7 @@ const Signup = () => {
   const [serverMessage, setServerMessage] = useState({ type: '', text: '' });
 
   const API = axios.create({
-    baseURL: 'http://localhost:5000/api/users'
+    baseURL: 'https://fms-2-0.onrender.com/api/users'
   });
 
   const handleChange = (e) => {
