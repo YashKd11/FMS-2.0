@@ -54,6 +54,7 @@ const Signup = () => {
   };
 
   const handleSubmit = async (e) => {
+    console.log("HANDLE SUBMIT RUNNING");
     e.preventDefault();
     setServerMessage({ type: '', text: '' });
 
