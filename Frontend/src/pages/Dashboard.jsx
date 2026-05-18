@@ -18,7 +18,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
 
-      const res = await api.get("/upload/get-reports", {
+      const res = await api.get("/api/upload/get-reports", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -36,7 +36,7 @@ const Dashboard = () => {
     if (!reportToDelete) return;
 
     try {
-      await api.delete(`/upload/delete-report/${reportToDelete._id}`, {
+      await api.delete(`/api/upload/delete-report/${reportToDelete._id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -74,7 +74,7 @@ const Dashboard = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await api.post("/upload/upload-feedback", formData, {
+      const res = await api.post("/api/upload/upload-feedback", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
