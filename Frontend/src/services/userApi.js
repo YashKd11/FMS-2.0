@@ -1,5 +1,5 @@
 import { api } from "./api";
 
 export const signinUser = (data) => {
-  return api.post("/users/signin", data);
+  return api.post("/api/users/signin", data);
 };
