@@ -17,7 +17,7 @@ const Signup = () => {
 
   console.log(import.meta.env.VITE_API_URL);
   const API = axios.create({
-    baseURL: ` ${import.meta.env.VITE_API_URL}`
+    baseURL: import.meta.env.VITE_API_URL
   });
 
   const handleChange = (e) => {
@@ -62,7 +62,7 @@ const Signup = () => {
     setIsLoading(true);
 
     try {
-      const res = await API.post('api/users/signup', {
+      const res = await API.post('/api/users/signup', {
         username: formData.fullName,
         email: formData.email,
         password: formData.password
