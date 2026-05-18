@@ -8,19 +8,27 @@ const cors = require("cors");
 
 const allowedOrigins = (
   process.env.FRONTEND_ORIGINS ||
-  "http://localhost:5173,http://localhost:3000,https://acquired-winter-369109.firebaseapp.com"
+  "http://localhost:5173,http://localhost:3000"
 )
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
 const corsOptions = {
-  origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
+
+    console.log("Blocked by CORS:", origin);
+
     return callback(new Error("Not allowed by CORS"));
   },
+
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 200,
 };
 
