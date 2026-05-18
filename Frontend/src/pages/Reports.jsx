@@ -35,7 +35,7 @@ export const Reports = () => {
   const handleDownload = async () => {
     try {
       const res = await api.get(
-        `/upload/export/${selected._id}?shift=${selectedShift}`,
+        `/api/upload/export/${selected._id}?shift=${selectedShift}`,
         {
           responseType: "blob",
           headers: {
@@ -67,7 +67,7 @@ export const Reports = () => {
 
   const fetchReports = async () => {
     try {
-      const res = await api.get("/upload/get-reports", {
+      const res = await api.get("/api/upload/get-reports", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
