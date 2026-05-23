@@ -91,6 +91,8 @@ export const Reports = () => {
     );
   }
 
+  const sections = [...new Set(feedback.map((t) => t.section).filter(Boolean))];
+
   return (
     <div className="p-6 space-y-8">
       {/* REPORT SELECTOR */}
@@ -242,6 +244,17 @@ export const Reports = () => {
                 <option value="ALL">All Shifts</option>
                 <option value="M">Morning (M)</option>
                 <option value="E">Evening (E)</option>
+              </select>
+
+              <select
+                value={selectedSection}
+                onChange={(e) => setSelectedSection(e.target.value)}
+              >
+                {sections.map((sec) => (
+                  <option key={sec} value={sec}>
+                    {sec}
+                  </option>
+                ))}
               </select>
 
               {/* ACTIONS */}

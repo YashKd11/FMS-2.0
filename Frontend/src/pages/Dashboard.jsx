@@ -141,6 +141,12 @@ const Dashboard = () => {
 
   const avgRatingDisplay = (avgRatingRaw * 100).toFixed(2);
 
+  const sections = [
+    ...new Set(
+      feedback.map((t) => t.section).filter(Boolean)
+    ),
+  ];
+
   return (
     <div className="p-8 max-w-7xl mx-auto">
       {/* HEADER */}
@@ -152,12 +158,32 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowUploadModal(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg"
-        >
-          Import Data
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg"
+          >
+            Import Data
+          </button>
+
+          {selectedReport && (
+            <button
+              onClick={() => {
+                const token = localStorage.getItem("token");
+
+                const url =
+                  `${import.meta.env.VITE_API_URL}` +
+                  `/api/upload/export/${selectedReport._id}` +
+                  `?shift=${selectedShift}&section=${selectedSection}&token=${token}`;
+
+                window.open(url, "_blank");
+              }}
+              className="bg-indigo-600 text-white px-4 py-2 rounded-lg"
+            >
+              Export Report
+            </button>
+          )}
+        </div>
       </header>
 
       {/* REPORT LIST */}
@@ -270,13 +296,11 @@ const Dashboard = () => {
           <tbody>
             {feedback.map((t, i) => (
               <tr key={`${t.teacher}-${i}`} className="border-t">
-              <td className="p-3">{t.teacher}</td>
-              <td className="p-3">{t.shift}</td>
-              <td className="p-3">{t.section || "ALL"}</td>
-              <td className="p-3">
-                {(t.average * 100).toFixed(2)}%
-              </td>
-            </tr>
+                <td className="p-3">{t.teacher}</td>
+                <td className="p-3">{t.shift}</td>
+                <td className="p-3">{t.section || "ALL"}</td>
+                <td className="p-3">{(t.average * 100).toFixed(2)}%</td>
+              </tr>
             ))}
           </tbody>
         </table>
