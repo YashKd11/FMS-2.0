@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const SECRET_KEY = process.env.SECRET_KEY;
 const rateLimit = require("express-rate-limit");
 
 const protect = (req, res, next) => {
@@ -10,7 +11,7 @@ const protect = (req, res, next) => {
       return res.status(401).json({ message: "Not authorized" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
     req.userId = decoded.id;
 
@@ -32,4 +33,4 @@ const feedbackRequestsLimiter = rateLimit({
   message: "Too many feedback requests",
 });
 
-module.exports = { auth, protect, loginRateLimiter, feedbackRequestsLimiter };
+module.exports = { protect, loginRateLimiter, feedbackRequestsLimiter };
