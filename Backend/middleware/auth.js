@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const SECRET_KEY = process.env.SECRET_KEY;
 const rateLimit = require("express-rate-limit");
 
 const protect = (req, res, next) => {
@@ -11,9 +10,10 @@ const protect = (req, res, next) => {
       return res.status(401).json({ message: "Not authorized" });
     }
 
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const decoded = jwt.verify(token, process.env.JWT_SECERET);
 
     req.userId = decoded.id;
+    req.email = decoded.email;
 
     next();
   } catch (err) {
