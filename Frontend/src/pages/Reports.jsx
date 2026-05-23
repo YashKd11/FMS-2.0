@@ -31,11 +31,19 @@ export const Reports = () => {
   const [selected, setSelected] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedShift, setSelectedShift] = useState("ALL");
+  const [selectedSection, setSelectedSection] = useState("ALL");
+
+  const feedback = selected ?.teacherAnalysis || [];
 
   const handleDownload = async () => {
     try {
+      const query = new URLSearchParams({
+        shift: selectedShift,
+        section: selectedSection,
+      });
+
       const res = await api.get(
-        `/api/upload/export/${selected._id}?shift=${selectedShift}`,
+        `/api/upload/export/${selected._id}?${query.toString()}`,
         {
           responseType: "blob",
           headers: {
@@ -48,10 +56,16 @@ export const Reports = () => {
       const link = document.createElement("a");
 
       link.href = url;
-      link.setAttribute("download", `report_${selectedShift}.xlsx`);
+
+      link.setAttribute(
+        "download",
+        `report_${selectedShift}_${selectedSection}.xlsx`
+      );
 
       document.body.appendChild(link);
+
       link.click();
+
       link.remove();
 
       setShowExportModal(false);
@@ -175,7 +189,7 @@ export const Reports = () => {
 
                 {/* SHIFT BADGE */}
                 <div className="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-700">
-                  Shift: {teacher.shift || "N/A"}
+                Shift: {teacher.shift || "N/A"} | Section: {teacher.section || "ALL"}
                 </div>
               </div>
 
@@ -250,6 +264,7 @@ export const Reports = () => {
                 value={selectedSection}
                 onChange={(e) => setSelectedSection(e.target.value)}
               >
+                <option value="ALL">All Sections</option>
                 {sections.map((sec) => (
                   <option key={sec} value={sec}>
                     {sec}

@@ -141,12 +141,6 @@ const Dashboard = () => {
 
   const avgRatingDisplay = (avgRatingRaw * 100).toFixed(2);
 
-  const sections = [
-    ...new Set(
-      feedback.map((t) => t.section).filter(Boolean)
-    ),
-  ];
-
   return (
     <div className="p-8 max-w-7xl mx-auto">
       {/* HEADER */}
@@ -165,24 +159,6 @@ const Dashboard = () => {
           >
             Import Data
           </button>
-
-          {selectedReport && (
-            <button
-              onClick={() => {
-                const token = localStorage.getItem("token");
-
-                const url =
-                  `${import.meta.env.VITE_API_URL}` +
-                  `/api/upload/export/${selectedReport._id}` +
-                  `?shift=${selectedShift}&section=${selectedSection}&token=${token}`;
-
-                window.open(url, "_blank");
-              }}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg"
-            >
-              Export Report
-            </button>
-          )}
         </div>
       </header>
 
