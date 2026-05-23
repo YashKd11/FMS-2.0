@@ -13,7 +13,7 @@ import {
   LineElement,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 } from "chart.js";
 
 ChartJS.register(
@@ -35,43 +35,40 @@ export const Reports = () => {
   const [selectedShift, setSelectedShift] = useState("ALL");
   const [selectedSection, setSelectedSection] = useState("ALL");
 
-  const feedback = selected ?.teacherAnalysis || [];
+  const feedback = selected?.teacherAnalysis || [];
 
   const handleDownload = async () => {
     try {
       const token = localStorage.getItem("token");
-  
+
       const res = await api.get(
-        `/api/upload/export/${selected._id}?shift=${selectedShift}&section=${selectedSection}`,
+        `/api/upload/export/${selected._id}?shift=${selectedShift}&section=${selectedSection}&token=${token}`,
         {
           responseType: "blob",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
-  
+
       const url = window.URL.createObjectURL(new Blob([res.data]));
-  
+
       const link = document.createElement("a");
-  
+
       link.href = url;
-  
+
       link.setAttribute(
         "download",
         `report_${selectedShift}_${selectedSection}.xlsx`
       );
-  
+
       document.body.appendChild(link);
-  
+
       link.click();
-  
+
       link.remove();
-  
+
       setShowExportModal(false);
     } catch (err) {
       console.error(err);
-  
+
       alert("Download failed");
     }
   };
@@ -190,7 +187,8 @@ export const Reports = () => {
 
                 {/* SHIFT BADGE */}
                 <div className="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-700">
-                Shift: {teacher.shift || "N/A"} | Section: {teacher.section || "ALL"}
+                  Shift: {teacher.shift || "N/A"} | Section:{" "}
+                  {teacher.section || "ALL"}
                 </div>
               </div>
 
