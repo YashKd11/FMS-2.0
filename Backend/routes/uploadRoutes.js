@@ -1,5 +1,6 @@
 const express = require("express");
 const multer = require("multer");
+const auth = require("/")
 
 const uploadRouter = express.Router();
 
@@ -24,6 +25,6 @@ uploadRouter.post(
 
 uploadRouter.get("/get-reports", protect, getReports);
 uploadRouter.delete("/delete-report/:id", protect, deleteReport);
-uploadRouter.get("/export/:id", exportReport);
+uploadRouter.get("/export/:id", auth, exportReport);
 
 module.exports = uploadRouter;

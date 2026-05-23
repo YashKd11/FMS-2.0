@@ -13,6 +13,7 @@ import {
   LineElement,
   Tooltip,
   Legend,
+  Filler
 } from "chart.js";
 
 ChartJS.register(
@@ -23,7 +24,8 @@ ChartJS.register(
   PointElement,
   LineElement,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 export const Reports = () => {
@@ -37,40 +39,39 @@ export const Reports = () => {
 
   const handleDownload = async () => {
     try {
-      const query = new URLSearchParams({
-        shift: selectedShift,
-        section: selectedSection,
-      });
-
+      const token = localStorage.getItem("token");
+  
       const res = await api.get(
-        `/api/upload/export/${selected._id}?${query.toString()}`,
+        `/api/upload/export/${selected._id}?shift=${selectedShift}&section=${selectedSection}`,
         {
           responseType: "blob",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-
+  
       const url = window.URL.createObjectURL(new Blob([res.data]));
+  
       const link = document.createElement("a");
-
+  
       link.href = url;
-
+  
       link.setAttribute(
         "download",
         `report_${selectedShift}_${selectedSection}.xlsx`
       );
-
+  
       document.body.appendChild(link);
-
+  
       link.click();
-
+  
       link.remove();
-
+  
       setShowExportModal(false);
     } catch (err) {
       console.error(err);
+  
       alert("Download failed");
     }
   };
@@ -263,6 +264,7 @@ export const Reports = () => {
               <select
                 value={selectedSection}
                 onChange={(e) => setSelectedSection(e.target.value)}
+                className="w-full border p-2 rounded-lg"
               >
                 <option value="ALL">All Sections</option>
                 {sections.map((sec) => (

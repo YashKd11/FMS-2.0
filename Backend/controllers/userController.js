@@ -7,7 +7,7 @@ const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const SECRET_KEY = process.env.SECRET_KEY;
+const SECRET_KEY = process.env.JWT_SECRET;
 const randomstring = require("randomstring");
 
 const sanitizeUser = (user) => ({
@@ -17,12 +17,7 @@ const sanitizeUser = (user) => ({
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
 });
-// const sendResetPasswordMail = async (username, email, passwordResetToken) => {
-//try {
-//    const { email } = req.body;
-// } catch (err) {
-//    res.status(400).json({ message: "Something went wrong! $(err) });
-//}
+
 const signup = async (req, res) => {
   let { username, email, password } = req.body;
   let ip = req.ip;
