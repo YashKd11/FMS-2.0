@@ -31,12 +31,6 @@ const extractSection = (val) => {
   if (!val) return "ALL";
 
   const str = val.toString();
-
-  // Matches patterns like:
-  // B.Ed I-A
-  // B.Com III-B (M)
-  // BCA II-C (E)
-
   const match = str.match(/-([A-Z])(?:\s*\([A-Z]\))?$/i);
 
   return match ? match[1].toUpperCase() : "ALL";
