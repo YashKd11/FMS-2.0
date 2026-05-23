@@ -14,9 +14,6 @@ const allowedOrigins = (
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-console.log("FRONTEND_ORIGINS:", process.env.FRONTEND_ORIGINS);
-console.log("ALLOWED ORIGINS:", allowedOrigins);
-
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);

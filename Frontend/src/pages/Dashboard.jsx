@@ -12,6 +12,8 @@ const Dashboard = () => {
   const [reportToDelete, setReportToDelete] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedShift, setSelectedShift] = useState("ALL");
+  const [selectedSection, setSelectedSection] = useState("ALL");
 
   //  FETCH REPORTS
   const fetchReports = async () => {
@@ -104,8 +106,26 @@ const Dashboard = () => {
     }
   }, [reports]);
 
-  const feedback = selectedReport?.teacherAnalysis || [];
+  const rawFeedback = selectedReport?.teacherAnalysis || [];
+
+  const feedback = rawFeedback.filter((t) => {
+    const shiftMatch = selectedShift === "ALL" || t.shift === selectedShift;
+
+    const sectionMatch =
+      selectedSection === "ALL" || t.section === selectedSection;
+
+    return shiftMatch && sectionMatch;
+  });
+
   const totalTeachers = feedback.length;
+
+  const availableSections = [
+    ...new Set(rawFeedback.map((t) => t.section).filter(Boolean)),
+  ];
+
+  const availableShifts = [
+    ...new Set(rawFeedback.map((t) => t.shift).filter(Boolean)),
+  ];
 
   const bestTeacher =
     feedback.length > 0
@@ -181,6 +201,38 @@ const Dashboard = () => {
         )}
       </div>
 
+      <div className="flex gap-4 mb-6">
+        {/* SHIFT FILTER */}
+        <select
+          value={selectedShift}
+          onChange={(e) => setSelectedShift(e.target.value)}
+          className="border px-4 py-2 rounded-lg"
+        >
+          <option value="ALL">All Shifts</option>
+
+          {availableShifts.map((shift) => (
+            <option key={shift} value={shift}>
+              {shift}
+            </option>
+          ))}
+        </select>
+
+        {/* SECTION FILTER */}
+        <select
+          value={selectedSection}
+          onChange={(e) => setSelectedSection(e.target.value)}
+          className="border px-4 py-2 rounded-lg"
+        >
+          <option value="ALL">All Sections</option>
+
+          {availableSections.map((section) => (
+            <option key={section} value={section}>
+              {section}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* STATS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-xl shadow">
@@ -209,7 +261,8 @@ const Dashboard = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="p-3 text-left">Teacher</th>
-
+              <th className="p-3 text-left">Shift</th>
+              <th className="p-3 text-left">Section</th>
               <th className="p-3 text-left">Average</th>
             </tr>
           </thead>
@@ -217,10 +270,13 @@ const Dashboard = () => {
           <tbody>
             {feedback.map((t, i) => (
               <tr key={`${t.teacher}-${i}`} className="border-t">
-                <td className="p-3">{t.teacher}</td>
-
-                <td className="p-3">{(t.average * 100).toFixed(2)}%</td>
-              </tr>
+              <td className="p-3">{t.teacher}</td>
+              <td className="p-3">{t.shift}</td>
+              <td className="p-3">{t.section || "ALL"}</td>
+              <td className="p-3">
+                {(t.average * 100).toFixed(2)}%
+              </td>
+            </tr>
             ))}
           </tbody>
         </table>

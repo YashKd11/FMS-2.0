@@ -1,5 +1,6 @@
 const xlsx = require("xlsx");
 const Report = require("../models/report");
+const jwt = require("jsonwebtoken");
 
 // Fixed Attributes
 const ATTRIBUTES = [
@@ -24,6 +25,21 @@ const extractShift = (val) => {
   const match = str.match(/\(([A-Z])\)\s*$/i);
 
   return match ? match[1].toUpperCase() : "Unknown";
+};
+
+const extractSection = (val) => {
+  if (!val) return "ALL";
+
+  const str = val.toString();
+
+  // Matches patterns like:
+  // B.Ed I-A
+  // B.Com III-B (M)
+  // BCA II-C (E)
+
+  const match = str.match(/-([A-Z])(?:\s*\([A-Z]\))?$/i);
+
+  return match ? match[1].toUpperCase() : "ALL";
 };
 
 // GENERATE INSIGHTS
@@ -120,6 +136,7 @@ const uploadFeedback = async (req, res) => {
     rows.forEach((row) => {
       const metaValue = metaKey ? row[metaKey] : "";
       const shift = extractShift(metaValue);
+      const section = extractSection(metaValue);
 
       teacherBlocks.forEach((block) => {
         if (row[block.teacherColumn]) {
@@ -130,12 +147,13 @@ const uploadFeedback = async (req, res) => {
 
         if (!teacherName) return;
         const subject = block.subject;
-        const uniqueKey = `${teacherName}_${shift}`;
+        const uniqueKey = `${teacherName}_${shift}_${section}`;
 
         if (!teacherMap[uniqueKey]) {
           teacherMap[uniqueKey] = {
             teacher: teacherName.trim(),
             shift,
+            section,
 
             attributes: ATTRIBUTES.map((attr) => ({
               name: attr,
@@ -174,7 +192,6 @@ const uploadFeedback = async (req, res) => {
     const finalData = Object.values(teacherMap).map((teacher) => {
       const subjectAnalysis = Object.entries(teacher.subjectAnalysis).map(
         ([subjectName, attrs]) => {
-          // SUBJECT ATTRIBUTE SCORES
           const attributes = attrs.map((attr) => {
             const totalPoints = attr.total;
             const maxPoints = attr.count * 5;
@@ -227,6 +244,7 @@ const uploadFeedback = async (req, res) => {
       const structured = {
         teacher: teacher.teacher,
         shift: teacher.shift,
+        section: teacher.section,
 
         // FRONTEND
         attributes: overallAttributes,
@@ -268,12 +286,27 @@ const uploadFeedback = async (req, res) => {
 
 const exportReport = async (req, res) => {
   try {
+    const token = req.query.token;
+
+    if (!token) {
+      return res.status(401).json({
+        message: "No token provided",
+      });
+    }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    const userId = decoded.id;
+
     const { id } = req.params;
-    const { shift } = req.query;
+    const { shift, section } = req.query;
 
     const report = await Report.findOne({
       _id: id,
-      userId: req.userId,
+      userId: userId,
     });
 
     if (!report) {
@@ -286,6 +319,10 @@ const exportReport = async (req, res) => {
       teachers = teachers.filter((t) => t.shift === shift);
     }
 
+    if (section && section !== "ALL") {
+      teachers = teachers.filter((t) => t.section === section);
+    }
+
     const workbook = xlsx.utils.book_new();
 
     const rows = [];
@@ -294,20 +331,17 @@ const exportReport = async (req, res) => {
       teacher.subjectAnalysis.forEach((subjectBlock) => {
         subjectBlock.attributes.forEach((attr, attrIndex) => {
           rows.push({
+
             Faculty: attrIndex === 0 ? teacher.teacher : "",
-
             Subject: attrIndex === 0 ? subjectBlock.subject : "",
-
             Shift: attrIndex === 0 ? teacher.shift : "",
+            Section: attrIndex === 0 ? teacher.section : "",
 
             Attributes: attr.name,
 
             "Total Points": attr.total,
-
             "Maximum Points": attr.max,
-
             "Points Scored in %": `${(attr.score * 100).toFixed(2)}%`,
-
             "Average Percentage %":
               attrIndex === 0
                 ? `${(subjectBlock.average * 100).toFixed(2)}%`
@@ -331,6 +365,7 @@ const exportReport = async (req, res) => {
       { wch: 18 },
       { wch: 20 },
       { wch: 22 },
+      { wch: 12}
     ];
 
     // ---------------- APPEND SHEET ----------------
