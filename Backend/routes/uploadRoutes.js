@@ -25,6 +25,6 @@ uploadRouter.post(
 
 uploadRouter.get("/get-reports", protect, getReports);
 uploadRouter.delete("/delete-report/:id", protect, deleteReport);
-uploadRouter.get("/export/:id", auth, exportReport);
+uploadRouter.get("/export/:id", exportReport);
 
 module.exports = uploadRouter;
